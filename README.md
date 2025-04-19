@@ -104,7 +104,7 @@ Utilized 3 core CSV files:
 
 ```bash
 # Clone this repo
-git clone https://github.com/<your-username>/book-recommender.git
+git clone https://github.com/shah-br/Personalized-Book-Recommendation-System.git
 cd book-recommender
 
 # Ensure your CSV files are in the folder
