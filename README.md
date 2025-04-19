@@ -24,22 +24,47 @@ The system should be explainable, scalable, and capable of handling sparse, high
 
 ---
 
-## 📁 Dataset
+## 📁 Dataset Overview
 Kaggle Dataset Link - https://www.kaggle.com/datasets/somnambwl/bookcrossing-dataset   
 Utilized 3 core CSV files:
 - `Books.csv`: ISBN, Title, Author, Year, Publisher
 - `Users.csv`: UserID, Age
 - `Ratings.csv`: UserID, ISBN, Rating
 
+### 👤 Users
+
+- **Total users:** `278,859`
+- **Users who rated at least 1 book:** `99,053`
+- **Users who rated at least 2 books:** `43,385`
+- **Users who rated at least 10 books:** `12,306`
+
+➡️ Many users rate only once or twice — sparse data problem.
+
+### 📚 Books
+
+- **Total unique books:** `271,379`
+- **Books with at least 1 rating:** `270,171`
+- **Books with at least 2 ratings:** `124,513`
+- **Books with at least 10 ratings:** `17,480`
+
+➡️ Long-tail distribution — most books are rated only a few times.
+
+### 🧾 Ratings
+
+- **Rating scale:** `0–10`
+- **Matrix sparsity:** Over 99% of the user-book matrix is empty
+
+➡️ Highlights the need for efficient sparse matrix computation and cold-start strategies.
+
 ---
 
 ## 🧼 Step 1: Data Cleaning & Sparse Matrix Creation
 
-- Missing `Age`, `Author`, and `Publisher` fields handled
-- Duplicates removed
-- `User-ID` and `ISBN` mapped to numeric indices
-- Constructed a **COO-format User-Book matrix**
-- Exported to `libsvm` format for efficient parsing
+- Filled missing `Age`, `Author`, and `Publisher`
+- Removed duplicates
+- Mapped `User-ID` and `ISBN` to numerical indices
+- Created a COO-format User-Book matrix
+- Exported to `libsvm` for compactness and fast parsing
 
 📄 Output: `output.libsvm`
 
@@ -47,15 +72,18 @@ Utilized 3 core CSV files:
 
 ## 🧪 Step 2: Collaborative Filtering Engine
 
-### Algorithm Breakdown
+### 🔗 Algorithm Overview
 
-1. **Top-K Similar Users**
-   - Cosine similarity between each user pair
-   - Retain top-K (e.g., 10) most similar neighbors
+1. **Top-K User Similarity**
+   - Compute cosine similarity between each user and others
+   - Select top-K most similar users
 
-2. **Prediction & Recommendation**
-   - For each unread book, estimate score using neighbors' ratings
-   - Recommend top 5 books with highest predicted score
+2. **Generate Predictions**
+   - For books not yet rated by a user, compute estimated ratings
+   - Use similarity-weighted average of neighbor ratings
+
+3. **Recommend**
+   - Select top 5 books with highest estimated rating
 
 📄 Output: `final_recommendations_from_libsvm.csv`
 
@@ -67,7 +95,7 @@ Utilized 3 core CSV files:
 |----------|-------------|
 | Language | Python |
 | Libraries | `pandas`, `numpy`, `scipy` |
-| Format | `libsvm`, `coo_matrix` |
+| Format | `libsvm`, `coo_matrix`, `csv` |
 | Algorithm | User-based Collaborative Filtering (Cosine Similarity) |
 
 ---
@@ -79,10 +107,10 @@ Utilized 3 core CSV files:
 git clone https://github.com/<your-username>/book-recommender.git
 cd book-recommender
 
-# Ensure your CSV files are in the same folder
+# Ensure your CSV files are in the folder
 
-# Run data prep (creates sparse matrix and libsvm file)
+# Step 1: Preprocess data and create libsvm format
 python step1_data_prep.py
 
-# Run recommender system
+# Step 2: Run collaborative filtering recommender
 python step2_recommender.py
